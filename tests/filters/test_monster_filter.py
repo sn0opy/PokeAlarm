@@ -8,8 +8,9 @@ import PokeAlarm.Events as Events
 # ToDo: Find a better way
 # Reinforce UTF-8 as default
 from tests.filters import MockManager, generic_filter_test
+import importlib
 
-reload(sys)
+importlib.reload(sys)
 sys.setdefaultencoding('UTF8')
 
 

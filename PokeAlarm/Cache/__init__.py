@@ -1,5 +1,5 @@
-from Cache import Cache
-from FileCache import FileCache
+from .Cache import Cache
+from .FileCache import FileCache
 
 cache_options = ["mem", "file"]
 

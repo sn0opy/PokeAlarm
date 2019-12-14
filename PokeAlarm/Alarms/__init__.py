@@ -1,5 +1,5 @@
 from PokeAlarm.Utils import require_and_remove_key
-from Alarm import Alarm  # noqa F401
+from .Alarm import Alarm  # noqa F401
 
 
 def alarm_factory(mgr, settings, max_attempts, api_key):

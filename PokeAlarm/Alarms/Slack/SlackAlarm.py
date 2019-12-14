@@ -250,5 +250,5 @@ class SlackAlarm(Alarm):
     def channel_format(name):
         if name[0] == '#':  # Remove # if added
             name = name[1:]
-        name = name.replace(u"\u2642", "m").replace(u"\u2640", "f").lower()
+        name = name.replace("\u2642", "m").replace("\u2640", "f").lower()
         return re.sub("[^_a-z0-9-]+", "", name)

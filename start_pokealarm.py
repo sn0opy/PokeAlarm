@@ -5,6 +5,7 @@
 from datetime import timedelta, datetime
 
 from gevent import monkey
+import importlib
 monkey.patch_all()
 
 # Standard Library Imports
@@ -23,14 +24,12 @@ from PokeAlarm import config
 from PokeAlarm.Utilities.Logging import setup_std_handler, setup_file_handler
 from PokeAlarm.Cache import cache_options
 from PokeAlarm.Manager import Manager
-from PokeAlarm.Utils import get_path, parse_unicode, parse_boolean
+from PokeAlarm.Utils import get_path, parse_boolean
 from PokeAlarm.Load import parse_rules_file, parse_filters_file, \
     parse_alarms_file
 
 # Reinforce UTF-8 as default
-reload(sys)
-sys.setdefaultencoding('UTF8')
-
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 log = logging.getLogger('pokealarm.webserver')
 
@@ -82,7 +81,7 @@ def manage_webhook_data(_queue):
         obj = Events.event_factory(data)
         if obj is None:  # TODO: Improve Event error checking
             continue
-        for name, mgr in managers.iteritems():
+        for name, mgr in managers.items():
             if isinstance(obj, list):
                 for event in obj:
                     mgr.update(event)
@@ -149,7 +148,7 @@ def parse_settings(root_path):
         '-ll', '--log-lvl', type=int, choices=[1, 2, 3, 4, 5], default=3,
         help='Verbosity of the root logger.')
     parser.add_argument(
-        '-lf', '--log-file', type=parse_unicode, default='logs/pokealarm.log',
+        '-lf', '--log-file', default='logs/pokealarm.log',
         help="Path of a file to attach to a manager's logger.")
     parser.add_argument(
         '-ls', '--log-size', type=int, default=100,
@@ -163,7 +162,7 @@ def parse_settings(root_path):
         '-m', '--manager_count', type=int, default=1,
         help='Number of Manager processes to start.')
     parser.add_argument(
-        '-M', '--manager_name', type=parse_unicode,
+        '-M', '--manager_name',
         action='append', default=[],
         help='Names of Manager processes to start.')
     parser.add_argument(
@@ -171,7 +170,7 @@ def parse_settings(root_path):
         action='append', default=[3],
         help="Set the verbosity of a manager's logger.")
     parser.add_argument(
-        '-mlf', '--mgr-log-file', type=parse_unicode,
+        '-mlf', '--mgr-log-file',
         action='append', default=[None],
         help="Path of a file to attach to a manager's logger.")
     parser.add_argument(
@@ -182,33 +181,33 @@ def parse_settings(root_path):
         help="Maximum number of old manager's logs to keep before deletion.")
     # Files
     parser.add_argument(
-        '-f', '--filters', type=parse_unicode, action='append',
+        '-f', '--filters', action='append',
         default=['filters.json'],
         help='Filters configuration file. default: filters.json')
     parser.add_argument(
-        '-a', '--alarms', type=parse_unicode, action='append',
+        '-a', '--alarms', action='append',
         default=['alarms.json'],
         help='Alarms configuration file. default: alarms.json')
     parser.add_argument(
-        '-r', '--rules', type=parse_unicode, action='append',
+        '-r', '--rules', action='append',
         default=[None],
         help='Rules configuration file. default: None')
     parser.add_argument(
-        '-gf', '--geofences', type=parse_unicode,
+        '-gf', '--geofences',
         action='append', default=[None],
         help='Alarms configuration file. default: None')
 
     # Location Specific
     parser.add_argument(
-        '-l', '--location', type=parse_unicode, action='append',
+        '-l', '--location', action='append',
         default=[None], help='Location, can be an address or coordinates')
     parser.add_argument(
-        '-L', '--locale', type=parse_unicode, action='append', default=['en'],
+        '-L', '--locale', action='append', default=['en'],
         choices=['de', 'en', 'es', 'fr', 'it', 'ko', 'pt', 'zh_hk'],
         help='Locale for Pokemon and Move names: default en," '
              '+ " check locale folder for more options')
     parser.add_argument(
-        '-u', '--units', type=parse_unicode, default=['imperial'],
+        '-u', '--units', default=['imperial'],
         action='append', choices=['metric', 'imperial'],
         help='Specify either metric or imperial units to use for distance " '
              '+ "measurements. ')
@@ -218,7 +217,7 @@ def parse_settings(root_path):
 
     # GMaps
     parser.add_argument(
-        '-k', '--gmaps-key', type=parse_unicode, action='append',
+        '-k', '--gmaps-key', action='append',
         default=[None], help='Specify a Google API Key to use.')
     parser.add_argument(
         '--gmaps-rev-geocode', type=parse_boolean, action='append',
@@ -238,7 +237,7 @@ def parse_settings(root_path):
 
     # Misc
     parser.add_argument(
-        '-ct', '--cache_type', type=parse_unicode, action='append',
+        '-ct', '--cache_type', action='append',
         default=['mem'], choices=cache_options,
         help="Specify the type of cache to use. Options: "
              + "['mem', 'file'] (Default: 'mem')")
